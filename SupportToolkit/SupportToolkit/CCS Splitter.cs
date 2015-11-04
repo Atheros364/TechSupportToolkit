@@ -50,6 +50,40 @@ namespace SupportToolkit
             splitTime(textBox1.Text);
         }
 
+        private void adjuststartButton_Click(object sender, EventArgs e)
+        {
+            adjustStart(textBox1.Text);
+        }
+
+        private void adjustendButton_Click(object sender, EventArgs e)
+        {
+            adjustEnd(textBox1.Text);
+        }
+
+        private void adjuststartBox_Click(object sender, EventArgs e)//toggle plus and minus
+        {
+            if(adjuststartBox.Text == "-")
+            {
+                adjuststartBox.Text = "+";
+            }
+            else
+            {
+                adjuststartBox.Text = "-";
+            }
+        }
+
+        private void adjustendBox_Click(object sender, EventArgs e)//toggle plus and minus
+        {
+            if (adjustendBox.Text == "-")
+            {
+                adjustendBox.Text = "+";
+            }
+            else
+            {
+                adjustendBox.Text = "-";
+            }
+        }
+
         private void splitAll(string filePath)
         {
             //Load the data, add the clip ID lines and output in new file
@@ -244,10 +278,197 @@ namespace SupportToolkit
             prompt.ShowDialog();
         }
 
+        private void adjustStart(string filePath)
+        {
+            //takes the time from the textbox and the direction from the button then adjust the starting time of every segment
+            string[] origFile = getText(filePath);
+            if (origFile == null)
+            {
+                return;
+            }
+            string changeTime = adjuststartText.Text;//get the change time
+            Boolean adjustLater = false;//get the direction of the change
+            if(adjuststartBox.Text == "+")
+            {
+                adjustLater = true;
+            }
+            int changeMS = 0;
+            try
+            {
+                changeMS = Int32.Parse(changeTime);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("Invalid Time Code");
+                InvalidTime errormessage = new InvalidTime();
+                errormessage.ShowDialog();
+                Console.WriteLine(e.Message);
+                return;
+            }
+            
+
+            //get the clip name
+            string clipBaseName = origFile[2].Substring(2, origFile[2].Length - 3);
+
+            //start outputting to a new file while modifying it
+            // Set a variable to the My Documents path. 
+            string mydocpath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            StringBuilder sb = new StringBuilder();
+
+            //Start building the file
+            int clipCount = 1;
+            int segStart = 4;
+            int segEnd = origFile.Length - 1;
+            sb.AppendLine(origFile[0]);//write in the transcript name through the first segment
+            sb.AppendLine();
+            sb.AppendLine("C(" + clipBaseName + "-" + clipCount + ")");
+            clipCount++;
+
+            for (int i = segStart; i < segEnd; i++)
+            {
+                //get the start time, adjut it, rewrite that section of the line, and then append the line
+                string segStartTime = origFile[i].Substring(22, 12);
+                string output = origFile[i];
+                string newSegStartTime = segStartTime;
+                int[] checkSegStartTime = getTime(segStartTime);
+                int currentMS = toMilSec(checkSegStartTime);//get the current time in milliseconds
+                int newMS = currentMS;
+                if (adjustLater)
+                {
+                    newMS = currentMS + changeMS;
+                    newSegStartTime = milSecToString(newMS);
+                    output = origFile[i].Substring(0, 22) + newSegStartTime + origFile[i].Substring(34,16);
+                }else
+                {
+                    newMS = currentMS - changeMS;
+                    newSegStartTime = milSecToString(newMS);
+                    output = origFile[i].Substring(0, 22) + newSegStartTime + origFile[i].Substring(34, 16);
+                }
+                sb.AppendLine(output);
+
+            }
+
+
+            // Write the stream contents to a new file with the file name + "EDIT".
+            string fullPath = textBox1.Text;
+            string fileName = fullPath.Substring(mydocpath.Length + 1, fullPath.Length - mydocpath.Length - 5);
+            using (StreamWriter outfile = new StreamWriter(mydocpath + @"\" + fileName + "EDIT.ccs"))
+            {
+                outfile.Write(sb.ToString());
+            }
+
+            Completed prompt = new Completed();
+            prompt.ShowDialog();
+        }
+
+        private void adjustEnd(string filePath)
+        {
+            //takes the time from the textbox and the direction from the button then adjust the ending time of every segment
+            string[] origFile = getText(filePath);
+            if (origFile == null)
+            {
+                return;
+            }
+            string changeTime = adjustendText.Text;//get the change time
+            Boolean adjustLater = false;//get the direction of the change
+            if (adjustendBox.Text == "+")
+            {
+                adjustLater = true;
+            }
+            int changeMS = 0;
+            try
+            {
+                changeMS = Int32.Parse(changeTime);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Invalid Time Code");
+                InvalidTime errormessage = new InvalidTime();
+                errormessage.ShowDialog();
+                Console.WriteLine(e.Message);
+                return;
+            }
+
+            //get the clip name
+            string clipBaseName = origFile[2].Substring(2, origFile[2].Length - 3);
+
+            //start outputting to a new file while modifying it
+            // Set a variable to the My Documents path. 
+            string mydocpath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            StringBuilder sb = new StringBuilder();
+
+            //Start building the file
+            int clipCount = 1;
+            int segStart = 4;
+            int segEnd = origFile.Length - 1;
+            sb.AppendLine(origFile[0]);//write in the transcript name through the first segment
+            sb.AppendLine();
+            sb.AppendLine("C(" + clipBaseName + "-" + clipCount + ")");
+            clipCount++;
+
+            for (int i = segStart; i < segEnd; i++)
+            {
+                //get the start time, adjut it, rewrite that section of the line, and then append the line
+                string segEndTime = origFile[i].Substring(37, 12);
+                string output = origFile[i];
+                string newSegEndTime = segEndTime;
+                int[] checkSegEndTime = getTime(segEndTime);
+                int currentMS = toMilSec(checkSegEndTime);//get the current time in milliseconds
+                int newMS = currentMS;
+                if (adjustLater)
+                {
+                    newMS = currentMS + changeMS;
+                    newSegEndTime = milSecToString(newMS);
+                    output = origFile[i].Substring(0, 37) + newSegEndTime + origFile[i].Substring(49, 1);
+                }
+                else
+                {
+                    newMS = currentMS - changeMS;
+                    newSegEndTime = milSecToString(newMS);
+                    output = origFile[i].Substring(0, 37) + newSegEndTime + origFile[i].Substring(49, 1);
+                }
+                sb.AppendLine(output);
+
+            }
+
+
+            // Write the stream contents to a new file with the file name + "EDIT".
+            string fullPath = textBox1.Text;
+            string fileName = fullPath.Substring(mydocpath.Length + 1, fullPath.Length - mydocpath.Length - 5);
+            using (StreamWriter outfile = new StreamWriter(mydocpath + @"\" + fileName + "EDIT.ccs"))
+            {
+                outfile.Write(sb.ToString());
+            }
+
+            Completed prompt = new Completed();
+            prompt.ShowDialog();
+
+        }
+
         private int toSec(int[] timeArray)
         {
             int time = 0;
             time = timeArray[0] * 3600 + timeArray[1] * 60 + timeArray[2];
+            return time;
+        }
+
+        private int toMilSec(int[] timeArray)
+        {
+            int time = 0;
+            time = timeArray[0] * 3600 + timeArray[1] * 60 + timeArray[2];
+            time = time * 1000 + timeArray[3];
+            return time;
+        }
+
+        private string milSecToString(int milSec)
+        {
+            string time = "";
+            TimeSpan t = TimeSpan.FromMilliseconds(milSec);
+            time = string.Format("{0:D2}:{1:D2}:{2:D2}.{3:D3}",
+                                    t.Hours,
+                                    t.Minutes,
+                                    t.Seconds,
+                                    t.Milliseconds);
             return time;
         }
 
@@ -381,22 +602,69 @@ namespace SupportToolkit
 
             return origFile;
         }
-        private void timeBox_GotFocus(object sender, EventArgs e)//handles the default text for the time input
+
+
+        private void textBox_GotFocus(object sender, EventArgs e)//handles the default text for the time input
         {
-            if (this.waterMarkActive)
+            if(sender == this.textBox2)
             {
-                this.waterMarkActive = false;
-                this.textBox2.Text = "";
-                this.textBox2.ForeColor = System.Drawing.Color.Black;
+                if (this.waterMarkSplit)
+                {
+                    this.waterMarkSplit = false;
+                    this.textBox2.Text = "";
+                    this.textBox2.ForeColor = System.Drawing.Color.Black;
+                }
+            }
+            if (sender == this.adjuststartText)
+            {
+                if (this.waterMarkStart)
+                {
+                    this.waterMarkStart = false;
+                    this.adjuststartText.Text = "";
+                    this.adjuststartText.ForeColor = System.Drawing.Color.Black;
+                }
+            }
+            if (sender == this.adjustendText)
+            {
+                if (this.waterMarkEnd)
+                {
+                    this.waterMarkEnd = false;
+                    this.adjustendText.Text = "";
+                    this.adjustendText.ForeColor = System.Drawing.Color.Black;
+                }
             }
         }
-        private void timeBox_LostFocus(object sender, EventArgs e)
+
+
+        private void textBox_LostFocus(object sender, EventArgs e)// these functions check to see if the text boxes are active
+            //if they are it changes the font color and erases the watermark, it replaces the watermark if no text is entered.
         {
-            if (!this.waterMarkActive && string.IsNullOrEmpty(this.textBox2.Text))
+            if(sender == this.textBox2)
             {
-                this.waterMarkActive = true;
-                this.textBox2.Text = "H:MM:SS";
-                this.textBox2.ForeColor = System.Drawing.Color.Gray;
+                if (!this.waterMarkSplit && string.IsNullOrEmpty(this.textBox2.Text))
+                {
+                    this.waterMarkSplit = true;
+                    this.textBox2.Text = "H:MM:SS";
+                    this.textBox2.ForeColor = System.Drawing.Color.Gray;
+                }
+            }
+            if(sender == this.adjuststartText)
+            {
+                if (!this.waterMarkStart && string.IsNullOrEmpty(this.adjuststartText.Text))
+                {
+                    this.waterMarkStart = true;
+                    this.adjuststartText.Text = "mS";
+                    this.adjuststartText.ForeColor = System.Drawing.Color.Gray;
+                }
+            }
+            if(sender == this.adjustendText)
+            {
+                if (!this.waterMarkEnd && string.IsNullOrEmpty(this.adjustendText.Text))
+                {
+                    this.waterMarkEnd = true;
+                    this.adjustendText.Text = "mS";
+                    this.adjustendText.ForeColor = System.Drawing.Color.Gray;
+                }
             }
         }
     }

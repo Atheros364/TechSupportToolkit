@@ -70,6 +70,12 @@
     <Compile Include="InvalidTime.Designer.cs">
       <DependentUpon>InvalidTime.cs</DependentUpon>
     </Compile>
+    <Compile Include="Leading Zeros.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Leading Zeros.Designer.cs">
+      <DependentUpon>Leading Zeros.cs</DependentUpon>
+    </Compile>
     <Compile Include="Main Menu.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -80,6 +86,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="CCS Splitter.resx">
       <DependentUpon>CCS Splitter.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InvalidTime.resx">
+      <DependentUpon>InvalidTime.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Leading Zeros.resx">
+      <DependentUpon>Leading Zeros.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Main Menu.resx">
       <DependentUpon>Main Menu.cs</DependentUpon>
