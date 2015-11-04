@@ -46,14 +46,44 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.cs">
+    <Compile Include="CCS Splitter.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CCS Splitter.Designer.cs">
+      <DependentUpon>CCS Splitter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Completed.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Completed.Designer.cs">
+      <DependentUpon>Completed.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InvalidPath.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InvalidPath.Designer.cs">
+      <DependentUpon>InvalidPath.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InvalidTime.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InvalidTime.Designer.cs">
+      <DependentUpon>InvalidTime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Main Menu.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Main Menu.Designer.cs">
+      <DependentUpon>Main Menu.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="CCS Splitter.resx">
+      <DependentUpon>CCS Splitter.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Main Menu.resx">
+      <DependentUpon>Main Menu.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

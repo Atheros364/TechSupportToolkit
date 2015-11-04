@@ -28,12 +28,31 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.ccS_Splitter1 = new SupportToolkit.CCS_Splitter();
+            this.SuspendLayout();
+            // 
+            // ccS_Splitter1
+            // 
+            this.ccS_Splitter1.Location = new System.Drawing.Point(12, 97);
+            this.ccS_Splitter1.Name = "ccS_Splitter1";
+            this.ccS_Splitter1.Size = new System.Drawing.Size(330, 241);
+            this.ccS_Splitter1.TabIndex = 0;
+            // 
+            // Form1
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Text = "Form1";
+            this.ClientSize = new System.Drawing.Size(365, 350);
+            this.Controls.Add(this.ccS_Splitter1);
+            this.Name = "Form1";
+            this.Text = "Support Toolkit";
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private CCS_Splitter ccS_Splitter1;
     }
 }
 
