@@ -1,0 +1,233 @@
+Module Module1
+    'This is a simple visual basic version of the leading zeros batch file
+
+    'TODO/Change Log
+    'DONE: Basic program is done
+    'DONE: Added ability to look at existing prefix and keep it, with multiple prefixes per set (prefix object created,store files names in object)
+    'DONE: Added make changes option
+    'DONE: Change the Prefix finder to start from the right and go until nonnumeric character to avoid issues with multiple pockets of numbers(ie. John5-01)
+    'TODU: Improve efficiency
+    'TODO: Add option to keep current numbers and just add zeros.
+    'TODO: Add GUI, will need to be remade in a new project
+
+    Sub Main()
+        'Process.Start("CMD", "/K IPCONFIG") example of how to use cmd commands, /k makes it stay open /c closes after completion
+
+        Dim Direc As String = My.Computer.FileSystem.CurrentDirectory 'the current directory
+        Dim Files() As String 'all of the files in the directory to an array
+        Dim Count As Integer = 1 'The number to name the file
+        Dim Prefix As String = "EX"
+        Dim Digits As Integer = 4
+        Dim FileName As String
+        Dim Extension As String
+        Dim Sorter As New nvSorter()
+        Files = My.Computer.FileSystem.GetFiles(Direc).ToArray
+        Files = Sorter.Sort(Files) 'Sort the array into the same format as Windows
+        Dim Prefixes As New ArrayList
+
+        'Gather the user format choices
+        Console.WriteLine("----Leading Zero Utility----")
+        Console.WriteLine("Start numbering with: ")
+        Count = Convert.ToInt32(Console.ReadLine())
+        Console.WriteLine("Choose a number of digits: ")
+        Digits = Convert.ToInt32(Console.ReadLine())
+        Console.WriteLine("Would you like to keep current prefixes Y/N")
+        Dim Response As String = Console.ReadLine()
+        If Response = "Y" Or Response = "y" Then 'Go to fancy prefix object solution
+
+            For i = 0 To Files.Length - 1
+                FileName = Replace(Files(i), Direc + "\", "") 'remove the file path from the name
+                Extension = System.IO.Path.GetExtension(FileName) 'get the file extension
+                Dim PrefixName As String = ""
+                If (Not Extension = ".exe") Then
+                    'Identify Prefix
+                    PrefixName = GetPrefix(FileName)
+                    Dim Added As Boolean = False
+                    For j = 0 To Prefixes.Count - 1
+                        Dim PrefixObject As New Prefix
+                        PrefixObject = Prefixes(j)
+                        If PrefixName = PrefixObject.GetPrefix Then
+                            'Add file to prefix object
+                            Prefixes.RemoveAt(j)
+                            PrefixObject.AddFile(FileName)
+                            Prefixes.Add(PrefixObject)
+                            Added = True
+                            Exit For
+                        End If
+                    Next
+
+                    If Added = False Then
+                        'Creat new prefix object
+                        Dim PrefixObject As New Prefix
+                        PrefixObject.SetPrefix(PrefixName)
+                        PrefixObject.AddFile(FileName)
+                        Prefixes.Add(PrefixObject)
+                    End If
+                    
+                End If
+            Next i
+            'Iterate through each prefix object and change file names
+            For j = 0 To Prefixes.Count - 1
+                Dim PrefixObject As New Prefix
+                PrefixObject = Prefixes(j)
+                RenameArray(Direc, PrefixObject.GetFiles(), Count, PrefixObject.GetPrefix, Digits, False)
+            Next
+            Console.WriteLine("Would you like to make these changes (Y/N)?")
+            Dim Response2 As String = Console.ReadLine()
+            If Response2 = "Y" Or Response2 = "y" Then
+                For j = 0 To Prefixes.Count - 1
+                    Dim PrefixObject As New Prefix
+                    PrefixObject = Prefixes(j)
+                    RenameArray(Direc, PrefixObject.GetFiles(), Count, PrefixObject.GetPrefix, Digits, True)
+                Next
+                Console.WriteLine("Renaming Complete")
+            Else
+                Console.WriteLine("No Changes Made")
+            End If
+
+
+        ElseIf Response = "N" Or Response = "n" Then 'Standard way
+            Console.WriteLine("Add prefix to the start of names: ")
+            Prefix = Console.ReadLine()
+            Console.WriteLine("Renaming Files")
+            Console.WriteLine()
+
+            'Iterate through the array
+            RenameArray(Direc, Files, Count, Prefix, Digits, False)
+            Console.WriteLine("Would you like to make these changes (Y/N)?")
+            Dim Response2 As String = Console.ReadLine()
+            If Response2 = "Y" Or Response2 = "y" Then
+                RenameArray(Direc, Files, Count, Prefix, Digits, True)
+                Console.WriteLine("Renaming Complete")
+            Else
+                Console.WriteLine("No Changes Made")
+            End If
+
+        Else
+            Console.WriteLine("Sorry that is not a valid response, try again") 'Kills the program if it doesnt understand(need more elegent solution, could stick this section in a loop)
+            Console.ReadLine()
+            End
+        End If
+
+
+        Console.ReadLine()
+
+
+    End Sub
+
+    Sub RenameArray(ByVal Direc As String, ByVal Files As String(), ByVal Count As Integer, ByVal Prefix As String, ByVal Digits As Integer, ByVal Write As Boolean)
+        Dim FileName As String
+        Dim Extension As String
+        Dim NumbersLong As String
+        Dim Numbers As String
+
+        For i = 0 To Files.Length - 1
+            FileName = Replace(Files(i), Direc + "\", "") 'remove the file path from the name
+            Extension = System.IO.Path.GetExtension(FileName) 'get the file extension
+            If (Not Extension = ".exe") Then
+                NumbersLong = "0000000000" + Count.ToString 'Set up numbers
+                Numbers = NumbersLong.Substring(NumbersLong.Length - Digits, Digits)
+                If Write = True Then
+                    'My.Computer.FileSystem.RenameFile(Files(i), Prefix + Numbers + Extension) 'Rename file, commented out for safety so I dont change program files
+                    Console.Write("Changed")
+                Else
+                    Console.Write(FileName)
+                    Console.WriteLine(" = " + Prefix + Numbers + Extension) 'Testing that it got the names right
+                End If
+                Count += 1
+            End If
+        Next i
+
+    End Sub
+
+    Function GetPrefix(ByVal FileName As String)
+        Dim PrefixName As String = ""
+        Dim Extension = System.IO.Path.GetExtension(FileName) 'get the file extension
+        FileName = Replace(FileName, Extension, "")
+        Dim PrefixEnd As Integer = FileName.Length
+        'For i = 0 To FileName.Length - 1 'starts on the left and goes until it hits a number
+        '    If IsNumeric(FileName(i)) Then
+        '        PrefixEnd = i
+        '        Exit For
+        '    End If
+        'Next i
+        'Alternate version starting from the right and going until non-numeric
+        For i = FileName.Length - 1 To 0 Step -1
+            If Not IsNumeric(FileName(i)) Then
+                PrefixEnd = i + 1
+                Exit For
+            End If
+            If i = 0 Then
+                PrefixEnd = 0
+                Exit For
+            End If
+        Next
+        PrefixName = FileName.Substring(0, PrefixEnd)
+        Return PrefixName
+    End Function
+    
+
+End Module
+
+Public Class nvSorter
+    Implements IComparer(Of String)
+
+    Declare Unicode Function StrCmpLogicalW Lib "shlwapi.dll" ( _
+    ByVal s1 As String, _
+    ByVal s2 As String) As Int32
+
+    Public Function Compare(ByVal x As String, ByVal y As String) As Integer Implements System.Collections.Generic.IComparer(Of String).Compare
+        Return StrCmpLogicalW(x, y)
+    End Function
+
+    Public Function Sort(ByVal Files() As String)
+        Dim i As Integer
+        Dim j As Integer
+        Dim best_Value As String
+        Dim best_j As Integer
+
+        'Basic selection sort
+        For i = 0 To Files.Length - 2
+            best_Value = Files(i)
+            best_j = i
+            For j = i + 1 To Files.Length - 1
+                If Compare(Files(j), best_Value) < 0 Then
+                    best_Value = Files(j)
+                    best_j = j
+                End If
+            Next j
+            Files(best_j) = Files(i)
+            Files(i) = best_Value
+            Dim q As Integer
+            For q = 0 To Files.Length - 1
+            Next
+        Next i
+
+        Return Files
+    End Function
+End Class
+
+
+
+Public Class Prefix
+    Dim PrefixName As String
+    Dim Files As New ArrayList
+
+    Public Sub SetPrefix(ByVal NewName As String)
+        PrefixName = NewName
+    End Sub
+
+    Public Function GetPrefix()
+        Return PrefixName
+    End Function
+
+    Public Sub AddFile(ByVal File As String)
+        Files.Add(File)
+    End Sub
+
+    Public Function GetFiles()
+        Dim FilesString As String() = CType(Files.ToArray(GetType(String)), String())
+        Return FilesString
+    End Function
+
+End Class
