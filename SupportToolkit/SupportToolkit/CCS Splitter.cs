@@ -37,27 +37,42 @@ namespace SupportToolkit
 
         private void splitallButton_Click(object sender, EventArgs e)
         {
-            splitAll(textBox1.Text);
+            StringBuilder sb = new StringBuilder();
+            //Start building the output file and put in the transcript name
+            string[] origFile = getText(textBox1.Text);
+            if (origFile == null)//if the source file is bad don't go to next part, the user warning comes in getText
+            {
+                return;
+            }
+
+            sb.AppendLine(origFile[0]);//put in the deposition name
+            sb.AppendLine();
+
+            splitAll(textBox1.Text, sb);//call the function to do the rest of the text
         }
 
         private void splitorderButton_Click(object sender, EventArgs e)
         {
-            splitOrder(textBox1.Text);
+            StringBuilder sb = new StringBuilder();
+            splitOrder(textBox1.Text, sb);
         }
 
         private void splittimeButton_Click(object sender, EventArgs e)
         {
-            splitTime(textBox1.Text);
+            StringBuilder sb = new StringBuilder();
+            splitTime(textBox1.Text, sb);
         }
 
         private void adjuststartButton_Click(object sender, EventArgs e)
         {
-            adjustStart(textBox1.Text);
+            StringBuilder sb = new StringBuilder();
+            adjustStart(textBox1.Text, sb);
         }
 
         private void adjustendButton_Click(object sender, EventArgs e)
         {
-            adjustEnd(textBox1.Text);
+            StringBuilder sb = new StringBuilder();
+            adjustEnd(textBox1.Text, sb);
         }
 
         private void adjuststartBox_Click(object sender, EventArgs e)//toggle plus and minus
@@ -84,7 +99,7 @@ namespace SupportToolkit
             }
         }
 
-        private void splitAll(string filePath)
+        private void splitAll(string filePath, StringBuilder sb)
         {
             //Load the data, add the clip ID lines and output in new file
             string[] origFile = getText(filePath);
@@ -99,14 +114,14 @@ namespace SupportToolkit
             //start outputting to a new file while modifying it
             // Set a variable to the My Documents path. 
             string mydocpath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            StringBuilder sb = new StringBuilder();
+            //StringBuilder sb = new StringBuilder();
 
             //Start building the file
             int clipCount = 1;
             int segStart = 4;
             int segEnd = origFile.Length - 1;
-            sb.AppendLine(origFile[0]);
-            sb.AppendLine();
+            //sb.AppendLine(origFile[0]);
+            //sb.AppendLine();
             for (int i = segStart; i < segEnd; i++)
             {
                 sb.AppendLine("C(" + clipBaseName + "-" + clipCount + ")");
@@ -129,7 +144,7 @@ namespace SupportToolkit
 
         }
 
-        private void splitOrder(string filePath)
+        private void splitOrder(string filePath, StringBuilder sb)
         {
             //Load the data, add the clip ID lines and output in new file
             string[] origFile = getText(filePath);
@@ -144,7 +159,7 @@ namespace SupportToolkit
             //start outputting to a new file while modifying it
             // Set a variable to the My Documents path. 
             string mydocpath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            StringBuilder sb = new StringBuilder();
+            //StringBuilder sb = new StringBuilder();
 
             //Start building the file
             int clipCount = 1;
@@ -193,7 +208,7 @@ namespace SupportToolkit
             prompt.ShowDialog();
         }
 
-        private void splitTime(string filePath)
+        private void splitTime(string filePath, StringBuilder sb)
         {
             //Load the data, add the clip ID lines and output in new file
             string[] origFile = getText(filePath);
@@ -217,7 +232,7 @@ namespace SupportToolkit
             //start outputting to a new file while modifying it
             // Set a variable to the My Documents path. 
             string mydocpath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            StringBuilder sb = new StringBuilder();
+            //StringBuilder sb = new StringBuilder();
 
             //Start building the file
             int clipCount = 1;
@@ -278,7 +293,7 @@ namespace SupportToolkit
             prompt.ShowDialog();
         }
 
-        private void adjustStart(string filePath)
+        private void adjustStart(string filePath, StringBuilder sb)
         {
             //takes the time from the textbox and the direction from the button then adjust the starting time of every segment
             string[] origFile = getText(filePath);
@@ -313,7 +328,7 @@ namespace SupportToolkit
             //start outputting to a new file while modifying it
             // Set a variable to the My Documents path. 
             string mydocpath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            StringBuilder sb = new StringBuilder();
+            //StringBuilder sb = new StringBuilder();
 
             //Start building the file
             int clipCount = 1;
@@ -361,7 +376,7 @@ namespace SupportToolkit
             prompt.ShowDialog();
         }
 
-        private void adjustEnd(string filePath)
+        private void adjustEnd(string filePath, StringBuilder sb)
         {
             //takes the time from the textbox and the direction from the button then adjust the ending time of every segment
             string[] origFile = getText(filePath);
@@ -395,7 +410,7 @@ namespace SupportToolkit
             //start outputting to a new file while modifying it
             // Set a variable to the My Documents path. 
             string mydocpath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            StringBuilder sb = new StringBuilder();
+            //StringBuilder sb = new StringBuilder();
 
             //Start building the file
             int clipCount = 1;
