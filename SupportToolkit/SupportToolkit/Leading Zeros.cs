@@ -17,6 +17,24 @@ namespace SupportToolkit
             InitializeComponent();
         }
 
+        private void directoryButton_Click(object sender, EventArgs e)
+        {
+            // Show the dialog and get result.
+            FolderBrowserDialog FolderBrowserSource = new FolderBrowserDialog();
+
+            DialogResult result = FolderBrowserSource.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                sourceFolderText = FolderBrowserSource.SelectedPath;
+            }
+
+        }
+
+        private void settingsButton_Click(object sender, EventArgs e)
+        {
+            ZerosOptions optionBox = new ZerosOptions();
+            optionBox.ShowDialog();
+        }
 
     }
 }

@@ -40,6 +40,7 @@
             this.directoryButton.TabIndex = 0;
             this.directoryButton.Text = "Choose Folder";
             this.directoryButton.UseVisualStyleBackColor = true;
+            this.directoryButton.Click += new System.EventHandler(this.directoryButton_Click);
             // 
             // settingsButton
             // 
@@ -49,6 +50,7 @@
             this.settingsButton.TabIndex = 1;
             this.settingsButton.Text = "Choose Name Settings";
             this.settingsButton.UseVisualStyleBackColor = true;
+            this.settingsButton.Click += new System.EventHandler(this.settingsButton_Click);
             // 
             // Leading_Zeros
             // 
@@ -66,5 +68,6 @@
 
         private System.Windows.Forms.Button directoryButton;
         private System.Windows.Forms.Button settingsButton;
+        private string sourceFolderText;
     }
 }
